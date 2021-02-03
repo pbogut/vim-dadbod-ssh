@@ -160,17 +160,15 @@ function! db#adapter#ssh#auth_pattern() abort
   return '^ERROR 104[45]\|denied\|login\|auth\|not permitted\|ORA-01017'
 endfunction
 
-function! db#adapter#ssh#complete_opaque(url) abort
-  let url = s:get_tunneled_url(a:url)
-  return call(s:fn_name(l:url, 'complete_opaque'), [l:url])
-endfunction
-
-function! db#adapter#ssh#complete_database(url) abort
-  let url = s:get_tunneled_url(a:url)
-  return call(s:fn_name(l:url, 'complete_database'), [l:url])
-endfunction
-
 function! db#adapter#ssh#tables(url) abort
   let url = s:get_tunneled_url(a:url)
   return call(s:fn_name(l:url, 'tables'), [l:url])
+endfunction
+
+function! db#adapter#ssh#complete_opaque(url) abort
+  return []
+endfunction
+
+function! db#adapter#ssh#complete_database(url) abort
+  return []
 endfunction
