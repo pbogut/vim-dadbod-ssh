@@ -56,7 +56,7 @@ function! s:drop_ssh_part(url) abort
   return substitute(a:url, '^ssh://[^:]*:', '', '')
 endfunction
 
-function! s:get_ssh_part(url) abort
+function! s:get_ssh_host(url) abort
   return substitute(a:url, '^ssh://\([^:]*\):.*', '\1', '')
 endfunction
 
@@ -96,7 +96,7 @@ let s:callbacks = {
       \ }
 
 function! s:get_tunneled_url(url)
-  let ssh_host = s:get_ssh_part(a:url)
+  let ssh_host = s:get_ssh_host(a:url)
   let url = s:drop_ssh_part(a:url)
 
   let url_parts = db#url#parse(url)
