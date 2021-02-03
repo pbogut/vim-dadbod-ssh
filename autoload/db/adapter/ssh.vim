@@ -73,6 +73,10 @@ function! s:on_event(job_id, data, event) dict
     if str =~ 'Pseudo-terminal will not be allocated'
       return
     endif
+    if str =~ 'Address already in use'
+      call jobstop(a:job_id)
+      return
+    endif
   else
     let s:wait_list[self.tunnel_id] = v:false
     if (!empty(get(s:tunnels, self.tunnel_id)))
