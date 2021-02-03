@@ -66,6 +66,9 @@ function! s:on_event(job_id, data, event) dict
     if str =~ 'ssh_connected'
       let s:tunnels[self.tunnel_id] = self.redirect_port
       let s:wait_list[self.tunnel_id] = v:false
+      if self.show_connection_info
+        echo "Tunnel " . self.tunnel_id . " has been created"
+      end
       return
     endif
   elseif a:event == 'stderr'
@@ -95,7 +98,9 @@ let s:callbacks = {
       \ 'on_exit': function('s:on_event')
       \ }
 
-function! s:get_tunneled_url(url)
+function! s:get_tunneled_url(url, ...)
+  let async = get(a:, 1, v:false)
+
   let ssh_host = s:get_ssh_host(a:url)
   let url = s:drop_ssh_part(a:url)
 
@@ -109,40 +114,50 @@ function! s:get_tunneled_url(url)
 
   let current_port = get(s:tunnels, tunnel_id)
   if (!empty(current_port))
-    let redirect_port = current_port
-  else
-    let redirect_port = s:get_free_port()
+    let url_parts['port'] = current_port
+    if async
+      echo "Tunnel " . tunnel_id . " already exists"
+    endif
+    return db#url#format(url_parts)
   endif
 
+  let redirect_port = s:get_free_port()
   if redirect_port == 0
     throw "DB SSH: Can't find free port to use"
   endif
 
-  let ssh_redirect = redirect_port . ':' . host . ':' .port
   let url_parts['port'] = redirect_port
-
-  let scheme = get(url_parts, 'scheme')
   let new_url = db#url#format(url_parts)
+  let ssh_redirect = redirect_port . ':' . host . ':' .port
 
-  if empty(current_port)
+  " check if connection is not currently being made
+  if get(s:wait_list, l:tunnel_id, v:false) != v:true
     let s:wait_list[l:tunnel_id] = v:true
-
     let job = jobstart(['ssh', '-L', ssh_redirect, ssh_host, '-t', 'echo ssh_connected; read'], extend({
           \   'tunnel_id': tunnel_id,
           \   'redirect_port': redirect_port,
+          \   'show_connection_info': async,
           \ }, s:callbacks))
-
-    let connection_status = wait(s:timeout, { -> s:wait_list[l:tunnel_id] == v:false }, 100)
-    if connection_status == -1
-      echom "DB SSH: Timeout while creating tunnel"
-    elseif connection_status == -2
-      echom "DB SSH: Connection canceled by user"
-    elseif connection_status == -3
-      echom "DB SSH: Unknown error occured while creating tunnel"
-    endif
   endif
 
-  return new_url
+  if async
+    echo "Creating tunnel " . tunnel_id . "..."
+    return new_url
+  end
+
+  " wait for tunnel to be established
+  let connection_status = wait(s:timeout, { -> s:wait_list[l:tunnel_id] == v:false }, 100)
+  if connection_status == -1
+    echom "DB SSH: Timeout while creating tunnel"
+  elseif connection_status == -2
+    echom "DB SSH: Connection canceled by user"
+  elseif connection_status == -3
+    echom "DB SSH: Unknown error occured while creating tunnel"
+  endif
+endfunction
+
+function! db#adapter#ssh#create_tunnel(url) abort
+  call s:get_tunneled_url(a:url, v:true)
 endfunction
 
 function! db#adapter#ssh#canonicalize(url) abort
