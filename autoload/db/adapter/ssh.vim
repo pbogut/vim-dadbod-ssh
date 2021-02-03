@@ -167,10 +167,10 @@ endfunction
 
 function! db#adapter#ssh#complete_database(url) abort
   let url = s:get_tunneled_url(a:url)
-  return call(s:fnname(l:url, 'complete_database'), [l:url])
+  return call(s:fn_name(l:url, 'complete_database'), [l:url])
 endfunction
 
 function! db#adapter#ssh#tables(url) abort
   let url = s:get_tunneled_url(a:url)
-  return call(s:fnname(l:url, 'tables'), [l:url])
+  return call(s:fn_name(l:url, 'tables'), [l:url])
 endfunction
