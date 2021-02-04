@@ -99,6 +99,9 @@ let s:callbacks = {
       \ }
 
 function! s:get_tunneled_url(url, ...)
+  if a:url !~? '^ssh:'
+    return a:url
+  endif
   let async = get(a:, 1, v:false)
 
   let ssh_host = s:get_ssh_host(a:url)
