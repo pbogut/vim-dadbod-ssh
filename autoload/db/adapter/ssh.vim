@@ -160,6 +160,8 @@ function! s:get_tunneled_url(url, ...)
   elseif connection_status == -3
     echom "DB SSH: Unknown error occured while creating tunnel"
   endif
+
+  return new_url
 endfunction
 
 function! db#adapter#ssh#create_tunnel(url) abort
