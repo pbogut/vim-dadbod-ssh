@@ -18,6 +18,9 @@ let s:default_ports = {
       \   'mongodb': 27017,
       \ }
 
+" experimental, when true play nicer with DBUI (but worse with DB)
+let s:default_async = get(g:, 'db_ssh_default_async', v:false)
+
 function s:get_free_port()
   let ports = systemlist("netstat -tuplen 2>/dev/null | grep " . s:localhost
       \                . " | awk '{print $4}' | sed 's/.*://g'")
@@ -102,7 +105,7 @@ function! s:get_tunneled_url(url, ...)
   if a:url !~? '^ssh:'
     return a:url
   endif
-  let async = get(a:, 1, v:false)
+  let async = get(a:, 1, s:default_async)
 
   let ssh_host = s:get_ssh_host(a:url)
   let url = s:drop_ssh_part(a:url)
