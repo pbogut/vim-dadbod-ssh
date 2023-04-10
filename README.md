@@ -12,7 +12,7 @@ It was tested with `mysql`, I'm not sure how well it works with other
 connections, if you are using it with other db please let me know.
 
 
-## Requiments
+## Requirements
 
   - **NeoVim** - Plugin is using nvim's `jobstart()` API to create and keep
     tunnel, I'm sure it can be done for Vim 8+ as well. I would be grateful
@@ -23,7 +23,7 @@ connections, if you are using it with other db please let me know.
     used:
     `netstat -tuplen 2>/dev/null | grep {localhost} | awk '{print $4}' | sed 's/.*://g'`
 
-## Instalation
+## Installation
 
 Using [vim-plug](https://github.com/junegunn/vim-plug):
 
