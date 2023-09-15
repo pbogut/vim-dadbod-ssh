@@ -25,7 +25,7 @@ function s:get_free_port()
   let env = toupper(substitute(system('uname'), '\n', '', ''))
 
   let detect_open_port_cmd = env =~ 'DARWIN'
-      \ ? ("lsof -nP -iTCP -sTCP:LISTEN | grep " . s:localhost . " | awk '{print $9}' | sed 's/.*://g'")
+      \ ? ("lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null | grep " . s:localhost . " | awk '{print $9}' | sed 's/.*://g'")
       \ : ("netstat -tuplen 2>/dev/null | grep " . s:localhost . " | awk '{print $4}' | sed 's/.*://g'")
 
   let ports = systemlist(detect_open_port_cmd)
