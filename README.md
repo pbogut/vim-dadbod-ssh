@@ -17,11 +17,12 @@ connections, if you are using it with other db please let me know.
   - **NeoVim** - Plugin is using nvim's `jobstart()` API to create and keep
     tunnel, I'm sure it can be done for Vim 8+ as well. I would be grateful
     for PR :heart:
-  - **Linux** (Maybe MacOS ?) - adapter is using `ssh` command to connect to
+  - **Linux** or **MacOS** - adapter is using `ssh` command to connect to
     the remote server. It is also using following commands:
-    `netstat`, `grep`, `awk` and `sed`. To be more specific this command is
+    `netstat` (Linux), `lsof` (MacOS), `grep`, `awk` and `sed`. To be more specific this command is
     used:
-    `netstat -tuplen 2>/dev/null | grep {localhost} | awk '{print $4}' | sed 's/.*://g'`
+    `netstat -tuplen 2>/dev/null | grep {localhost} | awk '{print $4}' | sed 's/.*://g'` (Linux)
+    `lsof -nP -iTCP -sTCP:LISTEN 2>/dev/null | grep {localhost} | awk '{print $9}' | sed 's/.*://g'` (MacOS)
 
 ## Installation
 
