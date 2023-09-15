@@ -22,8 +22,13 @@ let s:default_ports = {
 let s:default_async = get(g:, 'db_ssh_default_async', v:false)
 
 function s:get_free_port()
-  let ports = systemlist("lsof -nP -iTCP -sTCP:LISTEN | grep " . s:localhost
-      \                . " | awk '{print $9}' | sed 's/.*://g'")
+  let env = toupper(substitute(system('uname'), '\n', '', ''))
+
+  let detect_open_port_cmd = env =~ 'DARWIN'
+      \ ? ("lsof -nP -iTCP -sTCP:LISTEN | grep " . s:localhost . " | awk '{print $9}' | sed 's/.*://g'")
+      \ : ("netstat -tuplen 2>/dev/null | grep " . s:localhost . " | awk '{print $4}' | sed 's/.*://g'")
+
+  let ports = systemlist(detect_open_port_cmd)
 
   for port in s:port_range
       if index(ports, "" . port) == -1
