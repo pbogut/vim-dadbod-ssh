@@ -41,8 +41,8 @@ endfunction
 
 call s:get_free_port()
 
-function! s:prefix(adapter) abort
-  let scheme = tolower(matchstr(a:adapter, '^[^:]\+'))
+function! s:prefix(url) abort
+  let scheme = tolower(matchstr(a:url, '^[^:]\+'))
   let adapter = tr(scheme, '-+.', '_##')
   if empty(adapter)
     throw 'DB: no URL'
@@ -55,8 +55,9 @@ function! s:prefix(adapter) abort
   return prefix
 endfunction
 
-function! s:fn_name(adapter, fn) abort
-  let prefix = s:prefix(a:adapter)
+function! s:fn_name(url, fn) abort
+  let url = substitute(a:url, '^[^:]\+', '\=get(g:db_adapters, submatch(0), submatch(0))', '')
+  let prefix = s:prefix(url)
   return prefix . a:fn
 endfunction
 
