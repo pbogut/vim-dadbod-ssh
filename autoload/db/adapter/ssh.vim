@@ -31,9 +31,11 @@ function s:get_free_port()
   let ports = systemlist(detect_open_port_cmd)
 
   for port in s:port_range
-      if index(ports, "" . port) == -1
-          return port
-      endif
+    call add(s:port_range, port)
+    call remove(s:port_range, 0)
+    if index(ports, "" . port) == -1
+        return port
+    endif
   endfor
 
   return 0
