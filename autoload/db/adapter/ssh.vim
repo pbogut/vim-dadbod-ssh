@@ -10,6 +10,7 @@ let s:port_range = get(g:, 'db_adapter_ssh_port_range', range(7000, 7100))
 let s:tunnels = {}
 let s:wait_list = {}
 let s:default_ports = {
+      \   'mariadb': 3306,
       \   'mysql': 3306,
       \   'postgresql': 5432,
       \   'sqlserver': 1433,
