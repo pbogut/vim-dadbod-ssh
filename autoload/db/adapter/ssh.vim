@@ -173,8 +173,9 @@ function! s:get_tunneled_url(url, ...)
   return new_url
 endfunction
 
-function! db#adapter#ssh#create_tunnel(url) abort
-  call s:get_tunneled_url(a:url, v:true)
+function! db#adapter#ssh#create_tunnel(url, ...) abort
+  let async = get(a:, 1, v:true)
+  call s:get_tunneled_url(a:url, async)
 endfunction
 
 function! db#adapter#ssh#canonicalize(url) abort
